@@ -1,2 +1,3 @@
-# SD-XL-Z
-stable-diffusion-xl-refiner-1.0 기반 이미지 변환 서비스
+# Tagify
+LLM을 기반으로 이미지, pdf 등 파일에 대한 태그를 붙인다.
+저장된 태그를 통해 파일을 효율적으로 검색한다.
