@@ -1,0 +1,4 @@
+spring.application.name=Tagify
+
+spring.ai.embedding.transformer.onnx.modelUri=https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/model.onnx
+spring.ai.embedding.transformer.tokenizer.uri=https://huggingface.co/etri-vilab/Ko-LLaVA-13b/raw/main/tokenizer.json
