@@ -1,0 +1,36 @@
+name: Auto Merge PR
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Auto-merge pull request
+        if: github.event.review.state == 'approved'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          PR_URL=$(jq --raw-output .pull_request.url "$GITHUB_EVENT_PATH")
+          
+          echo "Fetching PR details for PR #$PR_NUMBER"
+          PR_STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .state)
+          PR_MERGEABLE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .mergeable)
+          
+          if [[ "$PR_STATE" == "open" && "$PR_MERGEABLE" == "true" ]]; then
+            echo "Merging PR #$PR_NUMBER"
+            curl -s -H "Authorization: token $GITHUB_TOKEN" -X PUT -d '{"merge_method":"merge"}' $PR_URL/merge
+          else
+            echo "PR #$PR_NUMBER is not in a merge
