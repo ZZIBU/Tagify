@@ -18,3 +18,9 @@ spring:
           - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model.bin.index.json
       tokenizer:
         uri: https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/tokenizer_config.json
+
+# required : 배포 이후 logback을 통해 환경별 세부 관리가 필요함
+logging:
+  level:
+    root: INFO
+
