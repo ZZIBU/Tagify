@@ -3,7 +3,7 @@ name: New Feature Issue
 about: Issue template for new feature
 title: "[FEAT]"
 labels: feature
-assignees: hyun98
+assignees: jhl8109
 
 ---
 

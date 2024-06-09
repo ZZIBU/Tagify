@@ -2,8 +2,8 @@
 name: Bug Issue
 about: 'Issue template for bug '
 title: "[BUG]"
-labels: bug
-assignees: hyun98
+labels: bug, feature
+assignees: jhl8109
 
 ---
 
