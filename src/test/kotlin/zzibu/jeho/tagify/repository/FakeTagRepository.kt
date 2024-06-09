@@ -19,8 +19,8 @@ class FakeTagRepository : TagRepository{
     }
 
     override fun <S : TagInfo?> save(entity: S & Any): S & Any {
-        val id = entity?.id ?: (++idCounter).toString()
-        val tag = entity!!.copy(id = id, uploadDate = LocalDateTime.now())
+        val id = entity.id ?: (++idCounter).toString()
+        val tag = entity.copy(id = id, uploadDate = LocalDateTime.now())
         storage[id] = tag
         return tag as (S & Any)
     }

@@ -20,6 +20,14 @@ class BeanTagRepositoryTest : BehaviorSpec() {
     private lateinit var tagRepository : TagRepository
 
     init {
+        var savedTagId: String? = null
+
+        afterTest {
+            savedTagId?.let {
+                tagRepository.deleteById(it)
+            }
+        }
+
         Given("태그 저장 테스트") {
             val tagInfo = TagInfo(
                 name = "test",
@@ -30,11 +38,13 @@ class BeanTagRepositoryTest : BehaviorSpec() {
             When("태그 정보를 입력하면") {
                 val savedTagInfo = tagRepository.save(tagInfo)
                 logger.info { "TagRepository-save() : $savedTagInfo" }
+
                 Then("저장된 태그 정보를 반환받는다.") {
                     savedTagInfo.id shouldNotBe null
                     // id, uploadDate의 경우 ES에 의해 생성되므로 이를 제외하고 검증
                     savedTagInfo.copy(id = null, uploadDate = null) shouldBe tagInfo
                 }
+                savedTagId = savedTagInfo.id
             }
 
         }
@@ -49,6 +59,7 @@ class BeanTagRepositoryTest : BehaviorSpec() {
                 val savedTagInfo = tagRepository.save(tagInfo)
                 val foundTagInfo = tagRepository.findById(savedTagInfo.id?: "1").get()
                 logger.info { "TagRepository-findById() : $foundTagInfo" }
+
                 Then("저장된 태그 정보를 반환받는다.") {
                     foundTagInfo shouldBe TagInfo(
                         id = savedTagInfo.id,
@@ -58,6 +69,7 @@ class BeanTagRepositoryTest : BehaviorSpec() {
                         uploadDate = foundTagInfo.uploadDate // uploadDate의 경우 auto generated 되므로 임의로 값을 일치시킴.
                     )
                 }
+                savedTagId = savedTagInfo.id
             }
 
             When("존재하지 않는 ID로 태그를 조회하면") {
@@ -70,6 +82,5 @@ class BeanTagRepositoryTest : BehaviorSpec() {
             }
         }
     }
-
     override fun extensions() = listOf(SpringExtension)
 }
