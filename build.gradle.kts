@@ -37,12 +37,18 @@ dependencies {
 	// spring ai
 	implementation("org.springframework.ai:spring-ai-transformers-spring-boot-starter:1.0.0-SNAPSHOT")
 
+
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	// kotest
+	testImplementation("io.kotest:kotest-runner-junit5:5.4.2")
+	testImplementation("io.kotest:kotest-assertions-core:5.4.2")
+	testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation(kotlin("stdlib-jdk8"))
 }
 
 kotlin {
