@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Tagify
+  data:
+    elasticsearch:
+      clients:
+        uris: http://localhost:9200
+  ai:
+    embedding:
+      transformer:
+        modelUri:
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00001-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00002-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00003-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00004-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00005-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model-00006-of-00006.bin
+          - https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/pytorch_model.bin.index.json
+      tokenizer:
+        uri: https://huggingface.co/etri-vilab/Ko-LLaVA-13b/resolve/main/tokenizer_config.json
