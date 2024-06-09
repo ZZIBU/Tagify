@@ -22,15 +22,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          PR_URL=$(jq --raw-output .pull_request.url "$GITHUB_EVENT_PATH")
-          
-          echo "Fetching PR details for PR #$PR_NUMBER"
-          PR_STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .state)
-          PR_MERGEABLE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .mergeable)
-          
-          if [[ "$PR_STATE" == "open" && "$PR_MERGEABLE" == "true" ]]; then
-            echo "Merging PR #$PR_NUMBER"
-            curl -s -H "Authorization: token $GITHUB_TOKEN" -X PUT -d '{"merge_method":"merge"}' $PR_URL/merge
-          else
-            echo "PR #$PR_NUMBER is not in a merge
+          prs=$(gh pr list --state open --json number,url)
+          for pr in $(echo "${prs}" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${pr} | base64 --decode | jq -r ${1}
+            }
+            PR_NUMBER=$(_jq '.number')
+            PR_URL=$(_jq '.url')
+            
+            echo "Fetching PR details for PR #$PR_NUMBER"
+            PR_STATE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .state)
+            PR_MERGEABLE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL | jq -r .mergeable)
+            PR_APPROVED=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $PR_URL/reviews | jq -r '.[] | select(.state == "APPROVED") | .state' | wc -l)
+            
+            if [[ "$PR_STATE" == "open" && "$PR_MERGEABLE" == "true" && "$PR_APPROVED" -ge 1 ]]; then
+              echo "Merging PR #$PR_NUMBER"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" -X PUT -d '{"merge_method":"merge"}' $PR_URL/merge
+            else
+              echo "PR #$PR_NUMBER is not in a mergeable state or not approved"
+            fi
+          done
