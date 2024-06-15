@@ -35,7 +35,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	// spring ai
-	implementation("org.springframework.ai:spring-ai-transformers-spring-boot-starter:1.0.0-SNAPSHOT")
+	implementation("org.springframework.ai:spring-ai-ollama-spring-boot-starter:1.0.0-SNAPSHOT")
 
 	// kotlin-logging
 	implementation("io.github.oshai:kotlin-logging-jvm:5.1.1")
