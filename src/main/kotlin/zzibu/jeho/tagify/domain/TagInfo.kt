@@ -1,4 +1,4 @@
-package zzibu.jeho.tagify.entity
+package zzibu.jeho.tagify.domain
 
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
@@ -15,7 +15,9 @@ data class TagInfo(
     val name: String,
     val url: String,
     val owner: String,
+    val tags : List<String>,
     @CreatedDate
     @Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second])
     val uploadDate: LocalDateTime? = null,
 )
+

@@ -1,7 +1,7 @@
 package zzibu.jeho.tagify.repository
 
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
-import zzibu.jeho.tagify.entity.TagInfo
+import zzibu.jeho.tagify.domain.TagInfo
 import java.util.*
 
 interface TagRepository : ElasticsearchRepository<TagInfo,String> {
