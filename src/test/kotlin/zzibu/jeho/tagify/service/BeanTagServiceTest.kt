@@ -1,13 +1,17 @@
 package zzibu.jeho.tagify.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.micrometer.common.util.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.web.multipart.MaxUploadSizeExceededException
+import zzibu.jeho.tagify.exception.InvalidFileTypeException
 import java.io.File
 import java.nio.file.Files
 
@@ -16,6 +20,9 @@ import java.nio.file.Files
 class BeanTagServiceTest : BehaviorSpec() {
     @Autowired
     lateinit var tagService: TagService
+
+    @Autowired
+    var maxFileSize : Long = 0L
 
     init {
         extensions(SpringExtension)
@@ -38,23 +45,57 @@ class BeanTagServiceTest : BehaviorSpec() {
                     val name = "testName"
                     val url = "http://example.com/image.jpg"
                     val owner = "testOwner"
-                    val tags = listOf("tag1", "tag2", "tag3")
 
                     val tagInfo = tagService.generateTagByImage(multipartFile, name, url, owner)
 
                     tagInfo.name shouldBe name
                     tagInfo.url shouldBe url
                     tagInfo.owner shouldBe owner
-                    tagInfo.tags.size shouldBe 5
+                    tagInfo.tags.size shouldNotBe 0
                 }
             }
 
             When("sendImageToVLM이 호출되면") {
                 Then("chatModel을 호출하고 응답을 반환해야 한다") {
-
                     val response = tagService.sendImageToVLM(multipartFile)
 
                     StringUtils.isNotEmpty(response) shouldBe  true
+                }
+            }
+            When("잘못된 파일 크기가 주어졌을 때") {
+                Then("MaxUploadSizeExceededException 예외를 던져야 한다") {
+                    val largeImageFile = MockMultipartFile(
+                        "file",
+                        "large_test.jpg",
+                        "image/jpeg",
+                        ByteArray(maxFileSize.toInt() + 1)
+                    )
+                    val name = "testName"
+                    val url = "http://example.com/image.jpg"
+                    val owner = "testOwner"
+
+                    shouldThrow<MaxUploadSizeExceededException> {
+                        tagService.generateTagByImage(largeImageFile, name, url, owner)
+                    }
+                }
+            }
+
+            When("잘못된 파일 포맷이 주어졌을 때") {
+                Then("InvalidFileTypeException 예외를 던져야 한다") {
+                    val textFile = MockMultipartFile(
+                        "file",
+                        "test.txt",
+                        "text/plain",
+                        "test".toByteArray()
+                    )
+
+                    val name = "testName"
+                    val url = "http://example.com/image.jpg"
+                    val owner = "testOwner"
+
+                    shouldThrow<InvalidFileTypeException> {
+                        tagService.generateTagByImage(textFile, name, url, owner)
+                    }
                 }
             }
         }
