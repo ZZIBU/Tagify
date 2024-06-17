@@ -12,10 +12,13 @@ import org.springframework.ai.chat.prompt.Prompt
 import org.springframework.ai.ollama.api.OllamaOptions
 import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.MimeTypeUtils
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartFile
 import zzibu.jeho.tagify.domain.TagInfo
+import zzibu.jeho.tagify.exception.InvalidFileTypeException
 import zzibu.jeho.tagify.repository.TagRepository
 import java.io.IOException
 import java.util.List
@@ -27,8 +30,11 @@ class TagService(
     private val tagRepository: TagRepository,
     private val chatModel: ChatModel,
     private val assistantMessage: String,
+    private val maxFileSize: Long
     ) {
+
     fun generateTagByImage(image:MultipartFile,  name : String,url : String, owner : String): TagInfo {
+        validateImage(image)
         val vlmResponse = sendImageToVLM(image)
         val tags = jsonToList(vlmResponse)
 
@@ -44,7 +50,6 @@ class TagService(
         return tagRepository.save(tagInfo)
     }
 
-    @Throws(IOException::class)
     fun sendImageToVLM(image : MultipartFile): String {
         val imageData = convertToInputStreamResource(image)
 
@@ -63,11 +68,7 @@ class TagService(
     private fun jsonToList(jsonString : String) : kotlin.collections.List<String> {
         val objectMapper = jacksonObjectMapper()
         val map: Map<String, String> = objectMapper.readValue(jsonString)
-        val tagList = mutableListOf<String>()
-        map.entries.forEach {
-            tagList.add(it.value)
-        }
-        return tagList.toList()
+        return map.values.toList()
     }
 
     // Spring AI 프레임워크의 Media 생성자 타입 Resource로 맞추기 위함.
@@ -78,6 +79,17 @@ class TagService(
                 return file.originalFilename
             }
         }
+    }
+    private fun validateImage(image : MultipartFile) : Unit {
+        if(!isImage(image)) throw InvalidFileTypeException("파일 타입을 확인해주세요")
+        if(image.size > maxFileSize) throw MaxUploadSizeExceededException(image.size)
+    }
+    private fun isImage(file : MultipartFile) : Boolean {
+        val contentType = file.contentType
+        return contentType != null && (contentType == MediaType.IMAGE_JPEG_VALUE ||
+                        contentType == MediaType.IMAGE_PNG_VALUE ||
+                        contentType == MediaType.IMAGE_GIF_VALUE
+                )
     }
 
     // not implemented yet
