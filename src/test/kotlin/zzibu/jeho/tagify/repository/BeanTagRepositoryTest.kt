@@ -8,7 +8,7 @@ import io.kotest.matchers.shouldNotBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
-import zzibu.jeho.tagify.entity.TagInfo
+import zzibu.jeho.tagify.domain.TagInfo
 
 private val logger = KotlinLogging.logger{}
 
@@ -33,6 +33,7 @@ class BeanTagRepositoryTest : BehaviorSpec() {
                 name = "test",
                 url = "http://example.com/test",
                 owner = "owner",
+                tags = listOf("태그1","태그2","태그3")
             )
 
             When("태그 정보를 입력하면") {
@@ -53,6 +54,7 @@ class BeanTagRepositoryTest : BehaviorSpec() {
                 name = "test",
                 url = "http://example.com/test",
                 owner = "owner",
+                tags = listOf("태그1","태그2","태그3")
             )
 
             When("저장된 태그를 ID로 조회하면") {
@@ -66,6 +68,7 @@ class BeanTagRepositoryTest : BehaviorSpec() {
                         name = savedTagInfo.name,
                         url = savedTagInfo.url,
                         owner = savedTagInfo.owner,
+                        tags = listOf("태그1","태그2","태그3"),
                         uploadDate = foundTagInfo.uploadDate // uploadDate의 경우 auto generated 되므로 임의로 값을 일치시킴.
                     )
                 }

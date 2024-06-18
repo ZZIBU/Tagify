@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import zzibu.jeho.tagify.entity.TagInfo
+import zzibu.jeho.tagify.domain.TagInfo
 
 private val logger = KotlinLogging.logger{}
 
@@ -17,6 +17,7 @@ class TagRepositoryTest : BehaviorSpec({
             name = "test",
             url = "http://example.com/test",
             owner = "owner",
+            tags = listOf()
         )
         When("태그 정보를 입력하면") {
             val savedTagInfo = tagRepository.save(tagInfo)
@@ -34,6 +35,7 @@ class TagRepositoryTest : BehaviorSpec({
             name = "test",
             url = "http://example.com/test",
             owner = "owner",
+            tags = listOf()
         )
 
         When("저장된 태그를 ID로 조회하면") {
@@ -47,6 +49,7 @@ class TagRepositoryTest : BehaviorSpec({
                     name = savedTagInfo.name,
                     url = savedTagInfo.url,
                     owner = savedTagInfo.owner,
+                    tags = listOf(),
                     uploadDate = foundTagInfo.uploadDate // uploadDate의 경우 auto generated 되므로 임의로 값을 일치시킴.
                 )
             }
