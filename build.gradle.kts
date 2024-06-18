@@ -88,10 +88,5 @@ jib {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	exclude("**/Bean*.kt") // 연동(Elasticsearch)이 필요한 중형 테스트는 제외
-}
-
-// build 작업이 실행될 때 jib 작업도 함께 실행되도록 설정
-tasks.named("build") {
-	dependsOn("jib")
+	exclude("**/Bean*.class") // 연동(Elasticsearch)이 필요한 중형 테스트는 제외
 }
