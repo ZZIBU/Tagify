@@ -1,6 +1,7 @@
 plugins {
 	id("org.springframework.boot") version "3.3.0"
 	id("io.spring.dependency-management") version "1.1.5"
+	id("com.google.cloud.tools.jib") version "3.4.1"
 	kotlin("jvm") version "1.9.24"
 	kotlin("plugin.spring") version "1.9.24"
 }
@@ -59,6 +60,33 @@ kotlin {
 	}
 }
 
+// Jib 플러그인 설정
+jib {
+	from {
+		image = "openjdk:21-jdk-slim"
+	}
+	to {
+		image = "${project.name.lowercase()}-${project.version.toString().lowercase()}"
+		tags = setOf("$version", "latest")
+	}
+	container {
+		labels = mapOf(
+			"maintainer" to "Jeho Lee <jhl81094@gmail.com>",
+			"org.opencontainers.image.title" to "tagify",
+			"org.opencontainers.image.description" to "Tagging for all of your files",
+			"org.opencontainers.image.version" to "$version",
+			"org.opencontainers.image.authors" to "Jeho Lee <jhl81094@gmail.com>",
+			"org.opencontainers.image.url" to "https://github.com/ZZIBU/Tagify"
+		)
+		jvmFlags = listOf(
+			"-Xms512m",
+			"-Xmx1024m"
+		)
+		ports = listOf("8080")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
+	exclude("**/Bean*.class") // 연동(Elasticsearch)이 필요한 중형 테스트는 제외
 }
