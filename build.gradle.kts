@@ -8,6 +8,7 @@ plugins {
 
 group = "zzibu.jeho"
 version = "0.0.1-SNAPSHOT"
+val projectOwner : String by project
 
 java {
 	toolchain {
@@ -66,7 +67,7 @@ jib {
 		image = "openjdk:21-jdk-slim"
 	}
 	to {
-		image = "${project.name.lowercase()}-${project.version.toString().lowercase()}"
+		image = "${projectOwner}/${project.name.lowercase()}"
 		tags = setOf("$version", "latest")
 	}
 	container {
