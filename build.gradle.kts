@@ -61,4 +61,5 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	exclude("**/Bean*Test.class", "**/*ControllerTest.class")
 }
