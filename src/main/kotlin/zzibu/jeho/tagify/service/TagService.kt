@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.MimeTypeUtils
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartFile
-import zzibu.jeho.tagify.domain.TagInfo
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
-import zzibu.jeho.tagify.repository.TagRepository
 import java.io.IOException
 import java.util.List
 
@@ -27,27 +25,17 @@ private val logger = KotlinLogging.logger{}
 
 @Service
 class TagService(
-    private val tagRepository: TagRepository,
     private val chatModel: ChatModel,
     private val assistantMessage: String,
     private val maxFileSize: Long
     ) {
 
-    fun generateTagByImage(image:MultipartFile,  name : String,url : String, owner : String): TagInfo {
+    fun generateTagByImage(image:MultipartFile): kotlin.collections.List<String> {
         validateImage(image)
         val vlmResponse = sendImageToVLM(image)
         val tags = jsonToList(vlmResponse)
 
-        logger.info { tags }
-
-        val tagInfo = TagInfo(
-            id = null,
-            url = url,
-            name = name,
-            owner = owner,
-            tags = tags,
-        )
-        return tagRepository.save(tagInfo)
+        return tags
     }
 
     fun sendImageToVLM(image : MultipartFile): String {
