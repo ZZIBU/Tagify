@@ -89,5 +89,5 @@ jib {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	exclude("**/Bean*.class") // 연동(Elasticsearch)이 필요한 중형 테스트는 제외
+	exclude("**/Bean*Test.class", "**/*ControllerTest.class")
 }

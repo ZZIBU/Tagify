@@ -6,19 +6,16 @@ import io.kotest.matchers.shouldBe
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartFile
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
-import zzibu.jeho.tagify.repository.FakeTagRepository
 import java.io.ByteArrayInputStream
-import kotlin.math.max
 
 class TagServiceTest : BehaviorSpec({
-    val tagRepository = FakeTagRepository()
     val chatModel = StubChatModel()
     val assistantMessage = """
                 Look at the image and list the words that come to mind in an array 
                     format : [1, 2, 3, 4, 5]
             """.trimIndent()
     val maxFileSize : Long = 10 * 1024 * 1024
-    val tagService = TagService(tagRepository, chatModel , assistantMessage, maxFileSize)
+    val tagService = TagService(chatModel , assistantMessage, maxFileSize)
 
 
 
@@ -37,18 +34,11 @@ class TagServiceTest : BehaviorSpec({
                         dest.writeBytes(getBytes())
                     }
                 }
-                val name = "testName"
-                val url = "http://example.com/image.jpg"
-                val owner = "testOwner"
-                val vlmResponse = """{"1":"tag1","2":"tag2","3":"tag3"}"""
                 val tags = listOf("tag1", "tag2", "tag3")
 
-                val tagInfo = tagService.generateTagByImage(multipartFile, name, url, owner)
+                val tagInfo = tagService.generateTagByImage(multipartFile)
 
-                tagInfo.name shouldBe name
-                tagInfo.url shouldBe url
-                tagInfo.owner shouldBe owner
-                tagInfo.tags shouldBe tags
+                tagInfo shouldBe tags
             }
         }
 
@@ -84,12 +74,9 @@ class TagServiceTest : BehaviorSpec({
                         dest.writeBytes(getBytes())
                     }
                 }
-                val name = "testName"
-                val url = "http://example.com/image.jpg"
-                val owner = "testOwner"
 
                 shouldThrow<MaxUploadSizeExceededException> {
-                    tagService.generateTagByImage(multipartFile, name, url, owner)
+                    tagService.generateTagByImage(multipartFile)
                 }
             }
         }
@@ -108,12 +95,9 @@ class TagServiceTest : BehaviorSpec({
                         dest.writeBytes(getBytes())
                     }
                 }
-                val name = "testName"
-                val url = "http://example.com/image.jpg"
-                val owner = "testOwner"
 
                 shouldThrow<InvalidFileTypeException> {
-                    tagService.generateTagByImage(multipartFile, name, url, owner)
+                    tagService.generateTagByImage(multipartFile)
                 }
             }
         }

@@ -8,7 +8,6 @@ import io.kotest.matchers.shouldNotBe
 import io.micrometer.common.util.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
@@ -16,8 +15,8 @@ import java.io.File
 import java.nio.file.Files
 
 @SpringBootTest
-@ComponentScan(basePackages = ["zzibu.jeho.tagify"])
 class BeanTagServiceTest : BehaviorSpec() {
+
     @Autowired
     lateinit var tagService: TagService
 
@@ -25,8 +24,6 @@ class BeanTagServiceTest : BehaviorSpec() {
     var maxFileSize : Long = 0L
 
     init {
-        extensions(SpringExtension)
-
         val imagePath = "src/test/resources/test.jpg" // 테스트용 이미지 파일 경로
         val imageFile = File(imagePath)
         val imageBytes = Files.readAllBytes(imageFile.toPath())
@@ -42,16 +39,10 @@ class BeanTagServiceTest : BehaviorSpec() {
             When("generateTagByImage가 호출되면") {
                 Then("태그를 생성하고 TagInfo를 저장해야 한다") {
 
-                    val name = "testName"
-                    val url = "http://example.com/image.jpg"
-                    val owner = "testOwner"
 
-                    val tagInfo = tagService.generateTagByImage(multipartFile, name, url, owner)
+                    val tagInfo = tagService.generateTagByImage(multipartFile)
 
-                    tagInfo.name shouldBe name
-                    tagInfo.url shouldBe url
-                    tagInfo.owner shouldBe owner
-                    tagInfo.tags.size shouldNotBe 0
+                    tagInfo.size shouldNotBe 0
                 }
             }
 
@@ -70,12 +61,9 @@ class BeanTagServiceTest : BehaviorSpec() {
                         "image/jpeg",
                         ByteArray(maxFileSize.toInt() + 1)
                     )
-                    val name = "testName"
-                    val url = "http://example.com/image.jpg"
-                    val owner = "testOwner"
 
                     shouldThrow<MaxUploadSizeExceededException> {
-                        tagService.generateTagByImage(largeImageFile, name, url, owner)
+                        tagService.generateTagByImage(largeImageFile)
                     }
                 }
             }
@@ -89,15 +77,12 @@ class BeanTagServiceTest : BehaviorSpec() {
                         "test".toByteArray()
                     )
 
-                    val name = "testName"
-                    val url = "http://example.com/image.jpg"
-                    val owner = "testOwner"
-
                     shouldThrow<InvalidFileTypeException> {
-                        tagService.generateTagByImage(textFile, name, url, owner)
+                        tagService.generateTagByImage(textFile)
                     }
                 }
             }
         }
     }
+    override fun extensions() = listOf(SpringExtension)
 }
