@@ -8,20 +8,19 @@ import org.springframework.web.multipart.MultipartFile
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
 import java.io.ByteArrayInputStream
 
-class TagServiceTest : BehaviorSpec({
+class ImageServiceTest : BehaviorSpec({
     val chatModel = StubChatModel()
     val assistantMessage = """
                 Look at the image and list the words that come to mind in an array 
                     format : [1, 2, 3, 4, 5]
             """.trimIndent()
     val maxFileSize : Long = 10 * 1024 * 1024
-    val tagService = TagService(chatModel , assistantMessage, maxFileSize)
+    val imageService = ImageService(chatModel , assistantMessage, maxFileSize)
 
 
-
-    Given("TagService가 주어졌을 때") {
+    Given("ImageService가 주어졌을 때") {
         When("generateTagByImage가 호출되면") {
-            Then("태그를 생성하고 TagInfo를 저장해야 한다") {
+            Then("Image를 식별하여 태그를 생성한다") {
                 val multipartFile = object : MultipartFile { // construct가 없으므로 직접 재정의
                     override fun getName() = "file"
                     override fun getOriginalFilename() = "test.jpg"
@@ -36,7 +35,7 @@ class TagServiceTest : BehaviorSpec({
                 }
                 val tags = listOf("tag1", "tag2", "tag3")
 
-                val tagInfo = tagService.generateTagByImage(multipartFile)
+                val tagInfo = imageService.generateTagByImage(multipartFile)
 
                 tagInfo shouldBe tags
             }
@@ -56,7 +55,7 @@ class TagServiceTest : BehaviorSpec({
                         dest.writeBytes(getBytes())
                     }
                 }
-                val response = tagService.sendImageToVLM(multipartFile)
+                val response = imageService.sendImageToVLM(multipartFile)
                 response shouldBe "{\"1\":\"tag1\",\"2\":\"tag2\",\"3\":\"tag3\"}"
             }
         }
@@ -76,7 +75,7 @@ class TagServiceTest : BehaviorSpec({
                 }
 
                 shouldThrow<MaxUploadSizeExceededException> {
-                    tagService.generateTagByImage(multipartFile)
+                    imageService.generateTagByImage(multipartFile)
                 }
             }
         }
@@ -97,7 +96,7 @@ class TagServiceTest : BehaviorSpec({
                 }
 
                 shouldThrow<InvalidFileTypeException> {
-                    tagService.generateTagByImage(multipartFile)
+                    imageService.generateTagByImage(multipartFile)
                 }
             }
         }
