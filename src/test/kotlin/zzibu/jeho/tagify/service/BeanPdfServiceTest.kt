@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
+import zzibu.jeho.tagify.util.ConversionUtils
 import java.io.File
 import java.nio.file.Files
 
@@ -46,7 +47,7 @@ class BeanPdfServiceTest : BehaviorSpec() {
 
             When("sendImageToVLM이 호출되면") {
                 Then("chatModel을 호출하고 응답을 반환해야 한다") {
-                    val images = pdfService.convertFileToImages(multipartFile)
+                    val images = ConversionUtils.convertFileToImages(multipartFile)
                     val response = pdfService.sendImageToVLM(images[0])
 
                     StringUtils.isNotEmpty(response) shouldBe true

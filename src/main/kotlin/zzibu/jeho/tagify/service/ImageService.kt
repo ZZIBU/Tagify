@@ -1,7 +1,5 @@
 package zzibu.jeho.tagify.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.ai.chat.messages.Media
 import org.springframework.ai.chat.messages.Message
 import org.springframework.ai.chat.messages.UserMessage
@@ -9,15 +7,13 @@ import org.springframework.ai.chat.model.ChatModel
 import org.springframework.ai.chat.model.ChatResponse
 import org.springframework.ai.chat.prompt.Prompt
 import org.springframework.ai.ollama.api.OllamaOptions
-import org.springframework.core.io.InputStreamResource
-import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.MimeTypeUtils
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.MultipartFile
 import zzibu.jeho.tagify.exception.InvalidFileTypeException
-import java.io.IOException
+import zzibu.jeho.tagify.util.ConversionUtils
 import java.util.List
 
 @Service
@@ -30,13 +26,13 @@ class ImageService(
     fun generateTagByImage(image: MultipartFile): kotlin.collections.List<String> {
         validateImage(image)
         val vlmResponse = sendImageToVLM(image)
-        val tags = jsonToList(vlmResponse)
+        val tags = ConversionUtils.jsonToList(vlmResponse)
 
         return tags
     }
 
     fun sendImageToVLM(image : MultipartFile): String {
-        val imageData = convertToInputStreamResource(image)
+        val imageData = ConversionUtils.convertToInputStreamResource(image)
 
         val userMessage = UserMessage(
             assistantMessage,
@@ -47,22 +43,6 @@ class ImageService(
             Prompt(List.of<Message>(userMessage), OllamaOptions.create().withModel("llava"))
         )
         return response.result.output.content.trimIndent()
-    }
-
-    private fun jsonToList(jsonString: String): kotlin.collections.List<String> {
-        val objectMapper = jacksonObjectMapper()
-        val map: Map<String, String> = objectMapper.readValue(jsonString)
-        return map.values.toList()
-    }
-
-    // Spring AI 프레임워크의 Media 생성자 타입 Resource로 맞추기 위함.
-    @Throws(IOException::class)
-    private fun convertToInputStreamResource(file: MultipartFile): Resource {
-        return object : InputStreamResource(file.inputStream) {
-            override fun getFilename(): String? {
-                return file.originalFilename
-            }
-        }
     }
     private fun validateImage(image : MultipartFile) : Unit {
         if(!isImage(image)) throw InvalidFileTypeException("파일 타입을 확인해주세요")
