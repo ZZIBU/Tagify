@@ -7,29 +7,31 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import zzibu.jeho.tagify.service.TagService
+import zzibu.jeho.tagify.service.ImageService
+import zzibu.jeho.tagify.service.PdfService
 
 @RestController
 @RequestMapping("/api/v1/tag")
-class TagController(private val tagService: TagService) {
+class TagController(private val pdfService: PdfService,
+                    private val imageService: ImageService) {
 
     @PostMapping("/image")
-    fun generateTags(
+    fun generateTagsFromImage(
         @RequestParam("image") image: MultipartFile,
-
     ): ResponseEntity<List<String>> {
         return ResponseEntity(
-            tagService.generateTagByImage(image),
+            imageService.generateTagByImage(image),
             HttpStatus.OK
         )
     }
 
-//    @PostMapping("/generate/url")
-//    fun tagsByUrl(
-//        @RequestParam("name") name : String,
-//        @RequestParam("url") url : String,
-//        @RequestParam("owner") owner : String,
-//    ): TagInfo {
-//        return tagService.generateTagByUrl(name,url,owner)
-//    }
+    @PostMapping("/pdf")
+    fun generateTagsFromPDF(
+        @RequestParam("pdf") pdf: MultipartFile,
+        ): ResponseEntity<List<String>> {
+        return ResponseEntity(
+            pdfService.generateTagByPDF(pdf),
+            HttpStatus.OK
+        )
+    }
 }

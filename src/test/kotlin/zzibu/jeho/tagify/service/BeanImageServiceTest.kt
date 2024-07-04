@@ -15,10 +15,10 @@ import java.io.File
 import java.nio.file.Files
 
 @SpringBootTest
-class BeanTagServiceTest : BehaviorSpec() {
+class BeanImageServiceTest : BehaviorSpec() {
 
     @Autowired
-    lateinit var tagService: TagService
+    lateinit var imageService: ImageService
 
     @Autowired
     var maxFileSize : Long = 0L
@@ -35,12 +35,12 @@ class BeanTagServiceTest : BehaviorSpec() {
             imageBytes
         )
 
-        Given("TagService가 주어졌을 때") {
+        Given("ImageService가 주어졌을 때") {
             When("generateTagByImage가 호출되면") {
                 Then("태그를 생성하고 TagInfo를 저장해야 한다") {
 
 
-                    val tagInfo = tagService.generateTagByImage(multipartFile)
+                    val tagInfo = imageService.generateTagByImage(multipartFile)
 
                     tagInfo.size shouldNotBe 0
                 }
@@ -48,7 +48,7 @@ class BeanTagServiceTest : BehaviorSpec() {
 
             When("sendImageToVLM이 호출되면") {
                 Then("chatModel을 호출하고 응답을 반환해야 한다") {
-                    val response = tagService.sendImageToVLM(multipartFile)
+                    val response = imageService.sendImageToVLM(multipartFile)
 
                     StringUtils.isNotEmpty(response) shouldBe  true
                 }
@@ -63,7 +63,7 @@ class BeanTagServiceTest : BehaviorSpec() {
                     )
 
                     shouldThrow<MaxUploadSizeExceededException> {
-                        tagService.generateTagByImage(largeImageFile)
+                        imageService.generateTagByImage(largeImageFile)
                     }
                 }
             }
@@ -78,7 +78,7 @@ class BeanTagServiceTest : BehaviorSpec() {
                     )
 
                     shouldThrow<InvalidFileTypeException> {
-                        tagService.generateTagByImage(textFile)
+                        imageService.generateTagByImage(textFile)
                     }
                 }
             }

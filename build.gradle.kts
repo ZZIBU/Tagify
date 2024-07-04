@@ -42,6 +42,9 @@ dependencies {
 	// kotlin-logging
 	implementation("io.github.oshai:kotlin-logging-jvm:5.1.1")
 
+	// PDFBox
+	implementation("org.apache.pdfbox:pdfbox:2.0.24")
+
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
