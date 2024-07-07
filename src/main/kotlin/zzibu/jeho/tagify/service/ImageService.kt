@@ -19,7 +19,7 @@ import java.util.List
 @Service
 class ImageService(
     private val chatModel: ChatModel,
-    private val assistantMessage: String,
+    private val assistantImageMessage: String,
     private val maxFileSize: Long
     ) {
 
@@ -35,7 +35,7 @@ class ImageService(
         val imageData = ConversionUtils.convertToInputStreamResource(image)
 
         val userMessage = UserMessage(
-            assistantMessage,
+            assistantImageMessage,
             List.of<Media>(Media(MimeTypeUtils.ALL, imageData))
         )
 

@@ -34,4 +34,14 @@ class TagController(private val pdfService: PdfService,
             HttpStatus.OK
         )
     }
+
+//    @PostMapping("/pdf/text")
+//    fun generateTagsFromPDF2(
+//        @RequestParam("pdf") pdf: MultipartFile,
+//    ): ResponseEntity<List<String>> {
+//        return ResponseEntity(
+//            pdfService.generateTagFromPDFToText(pdf),
+//            HttpStatus.OK
+//        )
+//    }
 }

@@ -2,6 +2,8 @@ package zzibu.jeho.tagify.util
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.sourceforge.tess4j.Tesseract
+import net.sourceforge.tess4j.TesseractException
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
 import org.springframework.core.io.InputStreamResource
@@ -66,5 +68,24 @@ object ConversionUtils {
         }
         document.close()
         return images
+    }
+
+    @Throws(TesseractException::class)
+    fun extractTextFromImage(image: BufferedImage): String {
+        val tesseract = Tesseract()
+        tesseract.setDatapath("data/tessdata") // Tesseract 데이터 파일 경로
+        tesseract.setLanguage("eng") // 사용할 언어 설정
+        return tesseract.doOCR(image)
+    }
+
+    @Throws(IOException::class, TesseractException::class)
+    fun convertFileToText(file: MultipartFile): String {
+        val images = convertFileToImages(file)
+        val textBuilder = StringBuilder()
+        for (image in images) {
+            textBuilder.append(extractTextFromImage(image))
+            textBuilder.append("\n")
+        }
+        return textBuilder.toString()
     }
 }
