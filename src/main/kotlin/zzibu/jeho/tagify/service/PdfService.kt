@@ -39,7 +39,7 @@ class PdfService(
     fun generateTagFromPDFToText(file: MultipartFile): List<String> {
         validateFile(file)
         val ocrTexts = ConversionUtils.convertFileToText(file)
-        logger.error { ocrTexts }
+
         val vlmResponse = sendTextToVLM(ocrTexts)
         val tags = ConversionUtils.jsonToList(vlmResponse)
 
