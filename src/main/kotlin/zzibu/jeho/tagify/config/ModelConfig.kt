@@ -12,7 +12,12 @@ import org.springframework.context.annotation.PropertySource
 class ModelConfig(val modelProperties: ModelProperties) {
 
     @Bean
-    fun assistantMessage() : String{
-        return modelProperties.message
+    fun assistantImageMessage() : String{
+        return modelProperties.imageMessage
+    }
+
+    @Bean
+    fun assistantPdfMessage() : String{
+        return modelProperties.pdfMessage
     }
 }

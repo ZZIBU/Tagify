@@ -6,5 +6,5 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
 
 @ConfigurationProperties(prefix="vlm")
-data class ModelProperties (val message:String)
+data class ModelProperties (val pdfMessage: String , val imageMessage:String)
 {}

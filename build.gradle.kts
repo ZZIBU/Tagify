@@ -45,6 +45,9 @@ dependencies {
 	// PDFBox
 	implementation("org.apache.pdfbox:pdfbox:2.0.24")
 
+	// Tesseract (OCR Dependency)
+	implementation("net.sourceforge.tess4j:tess4j:5.4.0")
+
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 

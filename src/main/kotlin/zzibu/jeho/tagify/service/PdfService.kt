@@ -22,7 +22,7 @@ private val logger = KotlinLogging.logger{}
 @Service
 class PdfService(
     private val chatModel: ChatModel,
-    private val assistantMessage: String,
+    private val assistantPdfMessage: String,
     private val maxFileSize: Long
     ) {
 
@@ -35,12 +35,31 @@ class PdfService(
         }
         return tags
     }
+
+    fun generateTagFromPDFToText(file: MultipartFile): List<String> {
+        validateFile(file)
+        val ocrTexts = ConversionUtils.convertFileToText(file)
+
+        val vlmResponse = sendTextToVLM(ocrTexts)
+        val tags = ConversionUtils.jsonToList(vlmResponse)
+
+        return tags
+    }
     fun sendImageToVLM(image: BufferedImage): String {
         val imageData = ConversionUtils.convertToInputStreamResource(image)
         val userMessage = UserMessage(
-            assistantMessage,
+            assistantPdfMessage,
             listOf<Media>(Media(MimeTypeUtils.ALL, imageData))
         )
+
+        val response: ChatResponse = chatModel.call(
+            Prompt(listOf(userMessage), OllamaOptions.create().withModel("llava"))
+        )
+        return response.result.output.content.trimIndent()
+    }
+
+    fun sendTextToVLM(text: String): String {
+        val userMessage = UserMessage(assistantPdfMessage)
 
         val response: ChatResponse = chatModel.call(
             Prompt(listOf(userMessage), OllamaOptions.create().withModel("llava"))
